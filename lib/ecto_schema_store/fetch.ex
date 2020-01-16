@@ -61,7 +61,6 @@ defmodule EctoSchemaStore.Fetch do
         order_list = Keyword.get opts, :order_by, nil
 
         case build_query(filters) do
-          {:error, _} = error -> error
           {:ok, query} ->
             query
             |> __order_by__(order_list)
@@ -84,7 +83,6 @@ defmodule EctoSchemaStore.Fetch do
       end
       def count_records(filters) do
         case build_query(filters) do
-          {:error, _} = error -> error
           {:ok, query} -> count_records query
         end
       end
@@ -126,7 +124,6 @@ defmodule EctoSchemaStore.Fetch do
         order_list = Keyword.get opts, :order_by, nil
 
         case build_query(filters) do
-          {:error, _} = error -> error
           {:ok, query} ->
             query
             |> __order_by__(order_list)

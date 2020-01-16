@@ -121,7 +121,6 @@ defmodule EctoSchemaStore.BuildQueries do
       defp build_query(query, [{key, value} | t]) do
         case build_keyword_query(query, key, value) do
           {:ok, query} -> build_query query, t
-          {:error, _message} = error -> error
         end
       end
       defp build_query(query, %{} = filters) do
@@ -147,7 +146,6 @@ defmodule EctoSchemaStore.BuildQueries do
       def build_query!(filters \\ [])
       def build_query!(filters) do
         case build_query(filters) do
-          {:error, reason} -> throw reason
           {:ok, query} -> query
         end
       end
