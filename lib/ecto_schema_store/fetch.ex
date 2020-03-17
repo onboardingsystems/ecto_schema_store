@@ -108,6 +108,8 @@ defmodule EctoSchemaStore.Fetch do
       * `to_map`               - Should the record model be converted from its struct to a generic map. Default: `false`
       * `order_by`             - Order the results by a the provided keyword list.
       """
+      @spec one(nil | keyword | integer | String.t() | Ecto.Query.t(), opts :: keyword) ::
+              nil | Ecto.Schema.t() | map
       def one(filters, opts \\ [])
       def one(nil, _opts), do: nil
       def one(id, opts) when is_binary(id), do: one(String.to_integer(id), opts)
