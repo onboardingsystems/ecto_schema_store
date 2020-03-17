@@ -32,17 +32,18 @@ defmodule EctoSchemaStore.Assistant do
   * `update_fields_api!`
   * `validate_update_api`
   """
-  defmacro preconfigure(name, predefined_options \\ []) when is_atom(name) and is_list(predefined_options) do
+  defmacro preconfigure(name, predefined_options \\ [])
+           when is_atom(name) and is_list(predefined_options) do
     quote do
-      preconfigure_insert unquote(name), unquote(predefined_options), "_", ""
-      preconfigure_insert unquote(name), unquote(predefined_options), "_", "!"
-      preconfigure_insert unquote(name), unquote(predefined_options), "_fields_", ""
-      preconfigure_insert unquote(name), unquote(predefined_options), "_fields_", "!"
-      preconfigure_update unquote(name), unquote(predefined_options), "_", ""
-      preconfigure_update unquote(name), unquote(predefined_options), "_", "!"
-      preconfigure_update unquote(name), unquote(predefined_options), "_fields_", ""
-      preconfigure_update unquote(name), unquote(predefined_options), "_fields_", "!"
-      preconfigure_validate unquote(name), unquote(predefined_options)
+      preconfigure_insert(unquote(name), unquote(predefined_options), "_", "")
+      preconfigure_insert(unquote(name), unquote(predefined_options), "_", "!")
+      preconfigure_insert(unquote(name), unquote(predefined_options), "_fields_", "")
+      preconfigure_insert(unquote(name), unquote(predefined_options), "_fields_", "!")
+      preconfigure_update(unquote(name), unquote(predefined_options), "_", "")
+      preconfigure_update(unquote(name), unquote(predefined_options), "_", "!")
+      preconfigure_update(unquote(name), unquote(predefined_options), "_fields_", "")
+      preconfigure_update(unquote(name), unquote(predefined_options), "_fields_", "!")
+      preconfigure_validate(unquote(name), unquote(predefined_options))
     end
   end
 
@@ -57,9 +58,15 @@ defmodule EctoSchemaStore.Assistant do
   insert_api_fields! name: "Sample"
   ```
   """
-  defmacro preconfigure_insert(name, predefined_options \\ [], action_prefix \\ "_", action_suffix \\ "") when is_atom(name) and is_list(predefined_options) do
+  defmacro preconfigure_insert(
+             name,
+             predefined_options \\ [],
+             action_prefix \\ "_",
+             action_suffix \\ ""
+           )
+           when is_atom(name) and is_list(predefined_options) do
     new_name = String.to_atom("insert#{action_prefix}#{name}#{action_suffix}")
-    action_prefix = String.replace_suffix action_prefix, "_", ""
+    action_prefix = String.replace_suffix(action_prefix, "_", "")
     callable = String.to_atom("insert#{action_prefix}#{action_suffix}")
 
     quote do
@@ -68,7 +75,7 @@ defmodule EctoSchemaStore.Assistant do
       predfined options.
 
       ```elixir
-      #{unquote(inspect predefined_options)}
+      #{unquote(inspect(predefined_options))}
       ```
 
       Using:
@@ -84,7 +91,7 @@ defmodule EctoSchemaStore.Assistant do
       ```
       """
       def unquote(new_name)(params, opts \\ []) do
-        options = Keyword.merge unquote(predefined_options), opts
+        options = Keyword.merge(unquote(predefined_options), opts)
         unquote(callable)(params, options)
       end
     end
@@ -101,9 +108,15 @@ defmodule EctoSchemaStore.Assistant do
   update_api_fields! name: "Sample"
   ```
   """
-  defmacro preconfigure_update(name, predefined_options \\ [], action_prefix \\ "_", action_suffix \\ "") when is_atom(name) and is_list(predefined_options) do
+  defmacro preconfigure_update(
+             name,
+             predefined_options \\ [],
+             action_prefix \\ "_",
+             action_suffix \\ ""
+           )
+           when is_atom(name) and is_list(predefined_options) do
     new_name = String.to_atom("update#{action_prefix}#{name}#{action_suffix}")
-    action_prefix = String.replace_suffix action_prefix, "_", ""
+    action_prefix = String.replace_suffix(action_prefix, "_", "")
     callable = String.to_atom("update#{action_prefix}#{action_suffix}")
 
     quote do
@@ -112,7 +125,7 @@ defmodule EctoSchemaStore.Assistant do
       predfined options.
 
       ```elixir
-      #{unquote(inspect predefined_options)}
+      #{unquote(inspect(predefined_options))}
       ```
 
       Using:
@@ -130,13 +143,14 @@ defmodule EctoSchemaStore.Assistant do
       ```
       """
       def unquote(new_name)(schema_or_id, params, opts \\ []) do
-        options = Keyword.merge unquote(predefined_options), opts
+        options = Keyword.merge(unquote(predefined_options), opts)
         unquote(callable)(schema_or_id, params, options)
       end
     end
   end
 
-  defmacro preconfigure_validate(name, predefined_options \\ []) when is_atom(name) and is_list(predefined_options) do
+  defmacro preconfigure_validate(name, predefined_options \\ [])
+           when is_atom(name) and is_list(predefined_options) do
     update_name = String.to_atom("validate_update_#{name}")
     insert_name = String.to_atom("validate_insert_#{name}")
 
@@ -145,7 +159,7 @@ defmodule EctoSchemaStore.Assistant do
       Checks update validation with the following predefined options:
 
       ```elixir
-      #{unquote(inspect predefined_options)}
+      #{unquote(inspect(predefined_options))}
       ```
 
       Using:
@@ -163,7 +177,7 @@ defmodule EctoSchemaStore.Assistant do
       ```
       """
       def unquote(update_name)(schema_or_id, params, opts \\ []) do
-        options = Keyword.merge unquote(predefined_options), opts
+        options = Keyword.merge(unquote(predefined_options), opts)
         validate_update(schema_or_id, params, options)
       end
 
@@ -171,7 +185,7 @@ defmodule EctoSchemaStore.Assistant do
       Checks insert validation with the following predefined options:
 
       ```elixir
-      #{unquote(inspect predefined_options)}
+      #{unquote(inspect(predefined_options))}
       ```
 
       Using:
@@ -187,7 +201,7 @@ defmodule EctoSchemaStore.Assistant do
       ```
       """
       def unquote(insert_name)(params, opts \\ []) do
-        options = Keyword.merge unquote(predefined_options), opts
+        options = Keyword.merge(unquote(predefined_options), opts)
         validate_insert(params, options)
       end
     end

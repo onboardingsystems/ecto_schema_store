@@ -1,5 +1,4 @@
 defmodule EctoSchemaStore do
-
   @moduledoc """
   This library is used to create customizable data stores for individual ecto schemas.
 
@@ -7,9 +6,9 @@ defmodule EctoSchemaStore do
   """
 
   defmacro __using__(opts) do
-    schema = Keyword.get opts, :schema
-    repo = Keyword.get opts, :repo
-    logging = Keyword.get opts, :logging
+    schema = Keyword.get(opts, :schema)
+    repo = Keyword.get(opts, :repo)
+    logging = Keyword.get(opts, :logging)
 
     quote do
       import EctoSchemaStore
@@ -29,12 +28,20 @@ defmodule EctoSchemaStore do
       use EventQueues, type: :announcer
       require EventQueues
 
-      EventQueues.defevents [:after_insert, :after_update, :after_delete, :before_insert, :before_update, :before_delete]
+      EventQueues.defevents([
+        :after_insert,
+        :after_update,
+        :after_delete,
+        :before_insert,
+        :before_update,
+        :before_delete
+      ])
 
       @doc """
       Returns a reference to the schema module `#{unquote(schema)}`.
       """
       def schema, do: unquote(schema)
+
       @doc """
       Returns a reference to the Ecto Repo module `#{unquote(repo)}`.
       """
@@ -43,23 +50,34 @@ defmodule EctoSchemaStore do
       if unquote(logging) do
         require Logger
 
-        def log_success(id, action), do: Logger.info("#{schema()} action `#{action}` success for #{id}")
+        def log_success(id, action),
+          do: Logger.info("#{schema()} action `#{action}` success for #{id}")
+
         def log_failure(nil, action, opts, errors) do
-          Logger.warn "#{schema()} action `#{action}` using opts `#{inspect(opts)}` failed due to #{inspect(errors)}"
+          Logger.warn(
+            "#{schema()} action `#{action}` using opts `#{inspect(opts)}` failed due to #{
+              inspect(errors)
+            }"
+          )
         end
+
         def log_failure(id, action, opts, errors) do
-          Logger.warn "#{schema()} action `#{action}` using opts `#{inspect(opts)}` for `#{id}` failed due to #{inspect(errors)}"
+          Logger.warn(
+            "#{schema()} action `#{action}` using opts `#{inspect(opts)}` for `#{id}` failed due to #{
+              inspect(errors)
+            }"
+          )
         end
       else
         def log_success(_id, _action), do: nil
         def log_failure(_id, _action, _opts, _changeset), do: nil
       end
 
-      EctoSchemaStore.Alias.build
+      EctoSchemaStore.Alias.build()
       EctoSchemaStore.BuildQueries.build(unquote(schema))
       EctoSchemaStore.Fetch.build(unquote(schema), unquote(repo))
       EctoSchemaStore.Edit.build(unquote(schema), unquote(repo))
-      EctoSchemaStore.Factory.build
+      EctoSchemaStore.Factory.build()
     end
   end
 
@@ -68,11 +86,9 @@ defmodule EctoSchemaStore do
   in order to handle the throwing of errors not from DBConnection more gracefully.
   """
   def transaction(repo, fun) do
-    repo.transaction fun
+    repo.transaction(fun)
   catch
     %Ecto.Changeset{} = error -> {:error, error}
     %{} = error -> {:error, error}
   end
-
-
 end

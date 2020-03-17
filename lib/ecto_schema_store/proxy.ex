@@ -57,47 +57,79 @@ defmodule EctoSchemaStore.Proxy do
   """
 
   @proxiable_functions [
-                        one: 1, one: 2,
-                        all: 0, all: 1, all: 2,
-                        insert: 0, insert: 1, insert: 2,
-                        insert!: 1, insert!: 2,
-                        insert_fields: 1, insert_fields: 2,
-                        insert_fields!: 1, insert_fields!: 2,
-                        update: 0, update: 1, update: 2,
-                        update!: 1, update!: 2,
-                        update_fields: 1, update_fields: 2,
-                        update_fields!: 1, update_fields!: 2,
-                        update_or_create: 2, update_or_create: 3,
-                        update_or_create!: 2, update_or_create!: 3,
-                        update_or_create_fields: 2, update_or_create_fields!: 2,
-                        delete: 1, delete: 2,
-                        delete!: 1, delete!: 2,
-                        delete_all: 0, delete_all: 1, delete_all: 2,
-                        generate: 0, generate: 1, generate: 2,
-                        generate!: 0, generate!: 1, generate!: 2,
-                        generate_default: 0, generate_default: 1,
-                        generate_default!: 0, generate_default!: 1,
-                        exists?: 1,
-                        to_map: 1,
-                        count_records: 0, count_records: 1,
-                        preload_assocs: 2,
-                        find_or_create: 2, find_or_create: 3,
-                        find_or_create!: 2, find_or_create!: 3,
-                        find_or_create_fields: 2, find_or_create_fields!: 2,
-                        validate_insert: 1, validate_insert: 2,
-                        validate_update: 2, validate_update: 3,
-                        transaction: 1,
-                        refresh: 1
-                       ]
+    one: 1,
+    one: 2,
+    all: 0,
+    all: 1,
+    all: 2,
+    insert: 0,
+    insert: 1,
+    insert: 2,
+    insert!: 1,
+    insert!: 2,
+    insert_fields: 1,
+    insert_fields: 2,
+    insert_fields!: 1,
+    insert_fields!: 2,
+    update: 0,
+    update: 1,
+    update: 2,
+    update!: 1,
+    update!: 2,
+    update_fields: 1,
+    update_fields: 2,
+    update_fields!: 1,
+    update_fields!: 2,
+    update_or_create: 2,
+    update_or_create: 3,
+    update_or_create!: 2,
+    update_or_create!: 3,
+    update_or_create_fields: 2,
+    update_or_create_fields!: 2,
+    delete: 1,
+    delete: 2,
+    delete!: 1,
+    delete!: 2,
+    delete_all: 0,
+    delete_all: 1,
+    delete_all: 2,
+    generate: 0,
+    generate: 1,
+    generate: 2,
+    generate!: 0,
+    generate!: 1,
+    generate!: 2,
+    generate_default: 0,
+    generate_default: 1,
+    generate_default!: 0,
+    generate_default!: 1,
+    exists?: 1,
+    to_map: 1,
+    count_records: 0,
+    count_records: 1,
+    preload_assocs: 2,
+    find_or_create: 2,
+    find_or_create: 3,
+    find_or_create!: 2,
+    find_or_create!: 3,
+    find_or_create_fields: 2,
+    find_or_create_fields!: 2,
+    validate_insert: 1,
+    validate_insert: 2,
+    validate_update: 2,
+    validate_update: 3,
+    transaction: 1,
+    refresh: 1
+  ]
 
   defmacro __using__(opts) do
-    module = Keyword.get opts, :store
+    module = Keyword.get(opts, :store)
     functions = @proxiable_functions
 
     setup =
-      if is_nil module do
+      if is_nil(module) do
         quote do
-          @__store_module__ String.to_atom "#{__MODULE__}.Store"
+          @__store_module__ String.to_atom("#{__MODULE__}.Store")
         end
       else
         quote do
@@ -121,6 +153,7 @@ defmodule EctoSchemaStore.Proxy do
   end
 
   def generate(function, arguments)
+
   def generate(function, 0) do
     quote do
       def unquote(function)() do
@@ -128,6 +161,7 @@ defmodule EctoSchemaStore.Proxy do
       end
     end
   end
+
   def generate(function, 1) do
     quote do
       def unquote(function)(arg1) do
@@ -135,6 +169,7 @@ defmodule EctoSchemaStore.Proxy do
       end
     end
   end
+
   def generate(function, 2) do
     quote do
       def unquote(function)(arg1, arg2) do
@@ -142,6 +177,7 @@ defmodule EctoSchemaStore.Proxy do
       end
     end
   end
+
   def generate(function, 3) do
     quote do
       def unquote(function)(arg1, arg2, arg3) do

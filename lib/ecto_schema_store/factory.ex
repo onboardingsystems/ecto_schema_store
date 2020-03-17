@@ -4,62 +4,66 @@ defmodule EctoSchemaStore.Factory do
   defmacro build do
     quote do
       def generate(keys \\ []) do
-        generate keys, %{}
+        generate(keys, %{})
       end
-      def generate(keys, fields ) when is_atom keys do
-        generate [keys], fields
+
+      def generate(keys, fields) when is_atom(keys) do
+        generate([keys], fields)
       end
-      def generate(keys, fields) when is_list keys do
+
+      def generate(keys, fields) when is_list(keys) do
         # Default always applies first.
         keys = [:default | keys]
+
         params_list =
-          Enum.map keys, fn(key) ->
+          Enum.map(keys, fn key ->
             try do
-              generate_prepare_fields apply(__MODULE__, :generate_params, [key])
+              generate_prepare_fields(apply(__MODULE__, :generate_params, [key]))
             rescue
               _ ->
                 if key != :default do
-                  Logger.warn "Factory '#{key}' not found in '#{__MODULE__}'."
+                  Logger.warn("Factory '#{key}' not found in '#{__MODULE__}'.")
                 end
 
                 %{}
             end
-          end
+          end)
 
         params =
-          Enum.reduce params_list, %{}, fn(params, acc) ->
-            Map.merge acc, params
-          end
+          Enum.reduce(params_list, %{}, fn params, acc ->
+            Map.merge(acc, params)
+          end)
 
-        fields = generate_prepare_fields fields
-        params = Map.merge params, fields
+        fields = generate_prepare_fields(fields)
+        params = Map.merge(params, fields)
 
-        insert_fields params
+        insert_fields(params)
       end
 
       def generate_default(fields \\ %{}) do
-        generate [], fields
+        generate([], fields)
       end
 
       def generate_default!(fields \\ %{}) do
-        generate! [], fields
+        generate!([], fields)
       end
 
       def generate!(keys \\ []) do
-        generate! keys, %{}
+        generate!(keys, %{})
       end
 
       def generate!(keys, fields) do
         case generate(keys, fields) do
           {:ok, response} -> response
-          {:error, message} -> throw message
+          {:error, message} -> throw(message)
         end
       end
 
-      defp generate_prepare_fields(fields) when is_list fields do
-        generate_prepare_fields Enum.into(fields, %{})
+      defp generate_prepare_fields(fields) when is_list(fields) do
+        generate_prepare_fields(Enum.into(fields, %{}))
       end
-      defp generate_prepare_fields(fields) when is_map fields do
+
+      defp generate_prepare_fields(fields) when is_map(fields) do
         alias_filters(fields)
       end
     end
@@ -78,7 +82,7 @@ defmodule EctoSchemaStore.Factory do
   defmacro factory(do: block) do
     quote do
       factory default do
-        unquote block
+        unquote(block)
       end
     end
   end

@@ -5,11 +5,12 @@ defmodule EctoSchemaStore.Alias do
     quote do
       def alias_filters(filters), do: generalize_keys(filters)
 
-      defp generalize_keys(entries) when is_list entries do
+      defp generalize_keys(entries) when is_list(entries) do
         for entry <- entries do
-          generalize_keys entry
+          generalize_keys(entry)
         end
       end
+
       defp generalize_keys(%{} = filters) do
         for {key, value} <- filters, into: %{} do
           key =
@@ -21,19 +22,20 @@ defmodule EctoSchemaStore.Alias do
           {key, value}
         end
       end
+
       defp generalize_keys(value), do: value
 
-      defoverridable [alias_filters: 1]
+      defoverridable alias_filters: 1
     end
   end
 
   defmacro alias_fields(keywords) do
     quote do
-      def alias_filters(filters) when is_list filters do
+      def alias_filters(filters) when is_list(filters) do
         aliases = unquote(keywords)
 
         for {key, value} <- filters do
-          new_key = Keyword.get aliases, key, nil
+          new_key = Keyword.get(aliases, key, nil)
 
           if new_key do
             {new_key, value}
@@ -42,11 +44,12 @@ defmodule EctoSchemaStore.Alias do
           end
         end
       end
+
       def alias_filters(filters) do
         filters = generalize_keys(filters)
         aliases = unquote(keywords)
 
-        Enum.reduce Keyword.keys(aliases), filters, fn(key, acc) ->
+        Enum.reduce(Keyword.keys(aliases), filters, fn key, acc ->
           if acc[key] do
             acc
             |> Map.put(aliases[key], acc[key])
@@ -54,7 +57,7 @@ defmodule EctoSchemaStore.Alias do
           else
             acc
           end
-        end
+        end)
       end
     end
   end

@@ -4,67 +4,77 @@ defmodule EctoSchemaStore.BuildQueries do
   defmacro build_ecto_query(query, :is_nil, key) do
     quote do
       from q in unquote(query),
-      where: is_nil(field(q, ^unquote(key)))
+        where: is_nil(field(q, ^unquote(key)))
     end
   end
+
   defmacro build_ecto_query(query, :not_nil, key) do
     quote do
       from q in unquote(query),
-      where: not is_nil(field(q, ^unquote(key)))
+        where: not is_nil(field(q, ^unquote(key)))
     end
   end
+
   defmacro build_ecto_query(query, :like, key, value) do
     quote do
       from q in unquote(query),
-      where: like(field(q, ^unquote(key)), unquote(value))
+        where: like(field(q, ^unquote(key)), unquote(value))
     end
   end
+
   defmacro build_ecto_query(query, :ilike, key, value) do
     quote do
       from q in unquote(query),
-      where: ilike(field(q, ^unquote(key)), unquote(value))
+        where: ilike(field(q, ^unquote(key)), unquote(value))
     end
   end
+
   defmacro build_ecto_query(query, :eq, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) == unquote(value)
+        where: field(q, ^unquote(key)) == unquote(value)
     end
   end
+
   defmacro build_ecto_query(query, :not, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) != unquote(value)
+        where: field(q, ^unquote(key)) != unquote(value)
     end
   end
+
   defmacro build_ecto_query(query, :lt, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) < unquote(value)
+        where: field(q, ^unquote(key)) < unquote(value)
     end
   end
+
   defmacro build_ecto_query(query, :lte, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) <= unquote(value)
+        where: field(q, ^unquote(key)) <= unquote(value)
     end
   end
+
   defmacro build_ecto_query(query, :gt, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) > unquote(value)
+        where: field(q, ^unquote(key)) > unquote(value)
     end
   end
+
   defmacro build_ecto_query(query, :gte, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) >= unquote(value)
+        where: field(q, ^unquote(key)) >= unquote(value)
     end
   end
+
   defmacro build_ecto_query(query, :in, key, value) do
     quote do
       from q in unquote(query),
-      where: field(q, ^unquote(key)) in unquote(value)
+        where: field(q, ^unquote(key)) in unquote(value)
     end
   end
 
@@ -76,39 +86,51 @@ defmodule EctoSchemaStore.BuildQueries do
       defp build_keyword_query(query, field_name, {:like, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :like, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:ilike, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :ilike, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:in, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :in, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:>=, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :gte, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:>, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :gt, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:<=, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :lte, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:<, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :lt, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:!=, nil}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :not_nil, field_name)}
       end
+
       defp build_keyword_query(query, field_name, {:==, nil}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :is_nil, field_name)}
       end
+
       defp build_keyword_query(query, field_name, {:!=, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :not, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, {:==, value}) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :eq, field_name, ^value)}
       end
+
       defp build_keyword_query(query, field_name, nil) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :is_nil, field_name)}
       end
+
       defp build_keyword_query(query, field_name, value) do
         {:ok, EctoSchemaStore.BuildQueries.build_ecto_query(query, :eq, field_name, ^value)}
       end
@@ -117,33 +139,38 @@ defmodule EctoSchemaStore.BuildQueries do
       def schema_associations, do: unquote(assocs)
 
       defp build_query(%Ecto.Query{} = query, []), do: {:ok, query}
-      defp build_query(query, []), do: {:ok, from(q in query)} # Schema name only, convert into query to avoid errors.
+      # Schema name only, convert into query to avoid errors.
+      defp build_query(query, []), do: {:ok, from(q in query)}
+
       defp build_query(query, [{key, value} | t]) do
         case build_keyword_query(query, key, value) do
-          {:ok, query} -> build_query query, t
+          {:ok, query} -> build_query(query, t)
         end
       end
+
       defp build_query(query, %{} = filters) do
-        build_query query, Enum.into(filters, [])
+        build_query(query, Enum.into(filters, []))
       end
 
       @doc """
       Build an `Ecto.Query` from the provided fields and values map. A keyword list builds
       a query in the order of the provided keys. Maps do not guarantee an order.
 
-      Available fields: `#{inspect unquote(keys)}`
+      Available fields: `#{inspect(unquote(keys))}`
       """
       def build_query(filters \\ [])
+
       def build_query(filters) do
-        build_query unquote(schema), alias_filters(filters)
+        build_query(unquote(schema), alias_filters(filters))
       end
 
       @doc """
       Build an `Ecto.Query` from the provided fields and values map. Returns the values or throws an error.
 
-      Available fields: `#{inspect unquote(keys)}`
+      Available fields: `#{inspect(unquote(keys))}`
       """
       def build_query!(filters \\ [])
+
       def build_query!(filters) do
         case build_query(filters) do
           {:ok, query} -> query
