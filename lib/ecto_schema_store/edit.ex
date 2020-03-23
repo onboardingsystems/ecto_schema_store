@@ -668,7 +668,7 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Like `delete` but throws and error instead of returning a tuple.
       """
-      @spec delete(integer | String.t() | Ecto.Schema.t() | map | keyword, opts :: keyword) ::
+      @spec delete!(integer | String.t() | Ecto.Schema.t() | map | keyword, opts :: keyword) ::
               Ecto.Schema.t()
       def delete!(model_or_id, opts \\ []) do
         case delete(model_or_id, opts) do
