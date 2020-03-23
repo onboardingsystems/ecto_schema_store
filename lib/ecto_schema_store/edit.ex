@@ -176,6 +176,8 @@ defmodule EctoSchemaStore.Edit do
       * `timeout`          - Number of milliseconds to wait before returning when a :before_* event is being sent and processed. Default: 5000
       * `sync`             - Should the operation wait for a :before_* event to be complete before returning. If not, then an :ok will be return and the action will be asynchronous. Default: true
       """
+      @spec insert(map | keyword | Ecto.Schema.t(), opts :: keyword) ::
+              {:ok, Ecto.Schema.t()} | {:error, any}
       def insert(params \\ %{}, opts \\ [])
 
       def insert(%unquote(schema){} = model, _opts) do
@@ -248,6 +250,8 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Insert a record into `#{unquote(schema)}` via `#{unquote(repo)}`. Sets the change directly and does not use a changeset.
       """
+      @spec insert_fields(map | keyword | Ecto.Schema.t(), opts :: keyword) ::
+              {:ok, Ecto.Schema.t()} | {:error, any}
       def insert_fields(params, opts \\ []) do
         opts =
           Keyword.merge(default_edit_options(), opts)
@@ -259,6 +263,7 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Like `insert` but throws and error instead of returning a tuple.
       """
+      @spec insert!(map | keyword | Ecto.Schema.t(), opts :: keyword) :: Ecto.Schema.t()
       def insert!(params, opts \\ []) do
         case insert(params, opts) do
           {:error, reason} -> throw(reason)
@@ -269,6 +274,7 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Like `insert_fields` but throws and error instead of returning a tuple.
       """
+      @spec insert_fields!(map | keyword | Ecto.Schema.t(), opts :: keyword) :: Ecto.Schema.t()
       def insert_fields!(params, opts \\ []) do
         opts =
           Keyword.merge(default_edit_options(), opts)
@@ -333,6 +339,11 @@ defmodule EctoSchemaStore.Edit do
       * `timeout`          - Number of milliseconds to wait before returning when a :before_* event is being sent and processed. Default: 5000
       * `sync`             - Should the operation wait for a :before_* event to be complete before returning. If not, then an :ok will be return and the action will be asynchronous. Default: true
       """
+      @spec update(
+              integer | String.t() | Ecto.Schema.t() | map | keyword,
+              keyword | map,
+              opts :: keyword
+            ) :: {:ok, Ecto.Schema.t()} | {:error, any}
       def update(id_or_model, params, opts \\ [])
 
       def update(id_or_model, params, opts) when is_list(id_or_model) do
@@ -401,6 +412,11 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Updates a record in `#{unquote(schema)}` via `#{unquote(repo)}`. Sets the change directly and does not use a changeset.
       """
+      @spec update_fields(
+              integer | String.t() | Ecto.Schema.t() | map | keyword,
+              keyword | map,
+              opts :: keyword
+            ) :: {:ok, Ecto.Schema.t()} | {:error, any}
       def update_fields(id_or_model, params, opts \\ []) do
         opts =
           Keyword.merge(default_edit_options(), opts)
@@ -412,6 +428,11 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Like `update` but throws and error instead of returning a tuple.
       """
+      @spec update!(
+              integer | String.t() | Ecto.Schema.t() | map | keyword,
+              keyword | map,
+              opts :: keyword
+            ) :: Ecto.Schema.t()
       def update!(id_or_model, params, opts \\ []) do
         case update(id_or_model, params, opts) do
           {:error, reason} -> throw(reason)
@@ -422,6 +443,11 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Like `update_fields` but throws and error instead of returning a tuple.
       """
+      @spec update_fields!(
+              integer | String.t() | Ecto.Schema.t() | map | keyword,
+              keyword | map,
+              opts :: keyword
+            ) :: Ecto.Schema.t()
       def update_fields!(id_or_model, params, opts \\ []) do
         opts =
           Keyword.merge(default_edit_options(), opts)
@@ -594,6 +620,10 @@ defmodule EctoSchemaStore.Edit do
       * `timeout`          - Number of milliseconds to wait before returning when a :before_* event is being sent and processed. Default: 5000
       * `sync`             - Should the operation wait for a :before_* event to be complete before returning. If not, then an :ok will be return and the action will be asynchronous. Default: true
       """
+      @spec delete(
+              integer | String.t() | Ecto.Schema.t() | map | keyword,
+              opts :: keyword
+            ) :: {:ok, Ecto.Schema.t()} | {:error, any}
       def delete(id_or_model, opts \\ []) do
         opts = Keyword.merge(default_edit_options(), opts)
         timeout = Keyword.get(opts, :timeout)
@@ -638,6 +668,8 @@ defmodule EctoSchemaStore.Edit do
       @doc """
       Like `delete` but throws and error instead of returning a tuple.
       """
+      @spec delete(integer | String.t() | Ecto.Schema.t() | map | keyword, opts :: keyword) ::
+              Ecto.Schema.t()
       def delete!(model_or_id, opts \\ []) do
         case delete(model_or_id, opts) do
           {:error, reason} -> throw(reason)

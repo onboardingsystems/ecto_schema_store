@@ -30,9 +30,13 @@ defmodule EctoSchemaStore.Fetch do
 
       defp __limit_to_first__(results), do: results
 
+      @type filters :: keyword | map | Ecto.Query.t()
+      @type opts :: keyword
+
       @doc """
       Fetch all records from `#{unquote(schema)}`.
       """
+      @spec all() :: [Ecto.Schema.t()]
       def all, do: all([])
 
       @doc """
@@ -44,6 +48,7 @@ defmodule EctoSchemaStore.Fetch do
       * `to_map`               - Should the record model be converted from its struct to a generic map. Default: `false`
       * `order_by`             - Order the results by a the provided keyword list.
       """
+      @spec all(filters, opts) :: [Ecto.Schem.t()] | [map]
       def all(filters, opts \\ [])
 
       def all(%Ecto.Query{} = query, opts) do
@@ -80,6 +85,7 @@ defmodule EctoSchemaStore.Fetch do
       @doc """
       Cound the number of records that met that query.
       """
+      @spec count_records(filters) :: integer
       def count_records(filters \\ [])
 
       def count_records(%Ecto.Query{} = query) do
@@ -108,7 +114,7 @@ defmodule EctoSchemaStore.Fetch do
       * `to_map`               - Should the record model be converted from its struct to a generic map. Default: `false`
       * `order_by`             - Order the results by a the provided keyword list.
       """
-      @spec one(nil | keyword | map | integer | String.t() | Ecto.Query.t(), opts :: keyword) ::
+      @spec one(nil | integer | String.t() | filters, opts) ::
               nil | Ecto.Schema.t() | map
       def one(filters, opts \\ [])
       def one(nil, _opts), do: nil
@@ -151,11 +157,13 @@ defmodule EctoSchemaStore.Fetch do
       @doc """
       Reloads a single record for `#{unquote(schema)}` from the database.
       """
+      @spec refresh(Ecto.Schema.t()) :: Ecto.Schema.t()
       def refresh(record), do: one(record.id)
 
       @doc """
       Preloads child associations.
       """
+      @spec preload_assocs(Ecto.Schema.t(), :all | list) :: Ecto.Schema.t()
       def preload_assocs(record, :all), do: preload_assocs(record, schema_associations())
 
       def preload_assocs(record, fields) when is_list(fields) do
@@ -185,12 +193,14 @@ defmodule EctoSchemaStore.Fetch do
       @doc """
       Returns true if any records match the provided query filters.
       """
+      @spec exists?(filters) :: boolean
       def exists?(filters), do: count_records(filters) > 0
 
       @doc """
       Convert the provided record to a generic map and Ecto date or time values to
       Elixir 1.3 equivalents. Replaces `destructure`.
       """
+      @spec to_map([Ecto.Schema.t()] | Ecto.Schema.t()) :: [map] | map
       def to_map(record) when is_list(record) do
         Enum.map(record, fn entry -> to_map(entry) end)
       end
