@@ -48,7 +48,7 @@ defmodule EctoSchemaStore.Fetch do
       * `to_map`               - Should the record model be converted from its struct to a generic map. Default: `false`
       * `order_by`             - Order the results by a the provided keyword list.
       """
-      @spec all(filters, opts) :: [Ecto.Schem.t()] | [map]
+      @spec all(filters, opts) :: [Ecto.Schema.t()] | [map]
       def all(filters, opts \\ [])
 
       def all(%Ecto.Query{} = query, opts) do
