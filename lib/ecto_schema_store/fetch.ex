@@ -163,7 +163,7 @@ defmodule EctoSchemaStore.Fetch do
       @doc """
       Preloads child associations.
       """
-      @spec preload_assocs(Ecto.Schema.t(), :all | list) :: Ecto.Schema.t()
+      @spec preload_assocs(Ecto.Schema.t(), atom | list) :: Ecto.Schema.t()
       def preload_assocs(record, :all), do: preload_assocs(record, schema_associations())
 
       def preload_assocs(record, fields) when is_list(fields) do
